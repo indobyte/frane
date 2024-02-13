@@ -70,6 +70,7 @@ app.post("/frame", function (req, res) {
     } else {
         var frame = createFrame(prize[ran].url, prize[ran].value);
         res.send(frame);
+        data = []
     }
 });
 app.listen(port, () => {
