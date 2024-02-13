@@ -68,7 +68,7 @@ app.post("/frame", function (req, res) {
         res.send(frame);
         data.push({ id: fid });
     } else {
-        var frame = createFrame(prize[ran].url, prize[ran].value);
+        var frame = createFrame("https://i.ibb.co/YhQtXKp/end.jpg", "Sorry :(");
         res.send(frame);
         data = []
     }
