@@ -4,36 +4,36 @@ const app = express();
 app.use(express.json());
 const port = process.env.PORT || 8080;
 app.use(
-    cors({
-        origin: "*"
-    })
+  cors({
+    origin: "*",
+  })
 );
 
 var prize = [
-    {
-        url: "https://i.ibb.co/z6PCKN3/100.jpg",
-        value: "100 $DEGEN"
-    },
-    {
-        url: "https://i.ibb.co/BPqk5rZ/200.jpg",
-        value: "200 $DEGEN"
-    },
-    {
-        url: "https://i.ibb.co/zNFrbRS/300.jpg",
-        value: "300 $DEGEN"
-    },
-    {
-        url: "https://i.ibb.co/qrfZJbC/400.jpg",
-        value: "400 $DEGEN"
-    },
-    {
-        url: "https://i.ibb.co/DMyMdwz/900.jpg",
-        value: "900 $DEGEN"
-    }
+  {
+    url: "https://i.ibb.co/z6PCKN3/100.jpg",
+    value: 100,
+  },
+  {
+    url: "https://i.ibb.co/BPqk5rZ/200.jpg",
+    value: 200,
+  },
+  {
+    url: "https://i.ibb.co/zNFrbRS/300.jpg",
+    value: 300,
+  },
+  {
+    url: "https://i.ibb.co/qrfZJbC/400.jpg",
+    value: 400,
+  },
+  {
+    url: "https://i.ibb.co/DMyMdwz/900.jpg",
+    value: 900,
+  },
 ];
 var data = [];
 function createFrame(thumb, button) {
-    const html = `
+  const html = `
   <!DOCTYPE html>
   <html>
   <head>
@@ -46,33 +46,46 @@ function createFrame(thumb, button) {
 <meta property="fc:frame:button:1" content="${button}" />
 </head>
 </html>`;
-    return html;
+  return html;
 }
+
 app.get("/frame", function (req, res) {
-    var frame = createFrame(
-        "https://i.ibb.co/P17RQMV/banner.jpg",
-        "Roll Now !"
-    );
-    res.send(frame);
+  var frame = createFrame("https://i.ibb.co/P17RQMV/banner.jpg", "Roll Now !");
+  res.send(frame);
 });
 
 app.post("/frame", function (req, res) {
-    var ran = Math.floor(Math.random() * prize.length);
-    var fid = req.body.untrustedData.fid;
-    var cari = data.find(id => id.id == fid);
-    if (!cari) {
-        var frame = createFrame(
-            "https://i.ibb.co/9ZqyJXV/alert.jpg",
-            "Try Again!"
-        );
-        res.send(frame);
-        data.push({ id: fid });
-    } else {
-        var frame = createFrame("https://i.ibb.co/YhQtXKp/end.jpg", "Sorry :(");
-        res.send(frame);
-        data = []
-    }
+  var ran = Math.floor(Math.random() * prize.length);
+  var fid = req.body.untrustedData.fid;
+
+  var cari = data.find((id) => id.id == fid);
+  console.log(cari);
+  console.log(req.body.untrustedData);
+
+  if (!cari) {
+    var frame = createFrame("https://i.ibb.co/9ZqyJXV/alert.jpg", "Try Again!");
+    res.send(frame);
+    data.push({ id: fid, reward: 0 });
+  }
+  if (cari.reward <= 0) {
+    var hadiah = prize[ran].value;
+    var frame = createFrame(prize[ran].url, `You Win ${hadiah} $DEGEN`);
+    index = data
+      .map(function (x) {
+        return x.id;
+      })
+      .indexOf(fid);
+    data[index].reward = hadiah;
+    res.send(frame);
+  }
+  if (cari.reward > 0) {
+    var frame = createFrame(
+      "https://i.ibb.co/p4ZGL75/1707554023-picsay.jpg",
+      `You Already Claimed : ${cari.reward} $DEGEN`
+    );
+    res.send(frame);
+  }
 });
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
